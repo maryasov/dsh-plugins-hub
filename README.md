@@ -1,4 +1,4 @@
-# dsh-plugins-mp
+# dsh-plugins-hub
 
 DeepSeek Harness plugin marketplace client: a catalog tab for
 [DSH better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) + agent tools
@@ -8,10 +8,10 @@ DeepSeek Harness plugin marketplace client: a catalog tab for
 ## Install
 
 ```sh
-dsh plugin --profile web add dsh-plugins-mp
+dsh plugin --profile web add dsh-plugins-hub
 ```
 
-(after the npm release; before that — `add github:maryasov/dsh-plugins-mp`).
+(after the npm release; before that — `add github:maryasov/dsh-plugins-hub`).
 
 The "Marketplace" tab appears in the sidebar when `dsh-better-sidebar` is installed
 (soft dependency: without it the plugin just skips the tab). Host-side tools always work.

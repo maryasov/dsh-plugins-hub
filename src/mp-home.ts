@@ -46,7 +46,7 @@ export function resolveDshHome(): string {
 export function resolveProfileDir(config?: { profile?: string }): string {
   const name = config?.profile ?? argvProfile() ?? 'web'
   if (!isDshProfileName(name)) {
-    throw new Error(`dsh-plugins-mp: invalid profile name ${JSON.stringify(name)}`)
+    throw new Error(`dsh-plugins-hub: invalid profile name ${JSON.stringify(name)}`)
   }
   return join(resolveDshHome(), 'profiles', name)
 }

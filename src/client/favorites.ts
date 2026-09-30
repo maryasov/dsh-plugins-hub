@@ -7,7 +7,7 @@
  */
 import { useSyncExternalStore } from 'react'
 
-export const FAVORITE_ROUTE = '/plugins/dsh-plugins-mp/favorite'
+export const FAVORITE_ROUTE = '/plugins/dsh-plugins-hub/favorite'
 
 let favorites: string[] = []
 let loaded = false

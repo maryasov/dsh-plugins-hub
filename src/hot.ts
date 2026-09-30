@@ -273,7 +273,7 @@ export async function hotMount(ctx: HotContext, profileDir: string, packageName:
       throw error
     }
     hotHandles.set(packageName, handle)
-    ctx.logger?.info?.(`[dsh-plugins-mp] hot-mounted ${packageName}`)
+    ctx.logger?.info?.(`[dsh-plugins-hub] hot-mounted ${packageName}`)
     logEvent('info', 'hot-mount', `${packageName}: live${shimNames.has(packageName) ? ' (client-only shim)' : ''}`)
     return { ok: true, reason: null }
   } catch (error) {

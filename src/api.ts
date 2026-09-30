@@ -85,7 +85,7 @@ export interface MpApiConfig {
   apiBase?: string
 }
 
-export const CONFIG_ROUTE = '/plugins/dsh-plugins-mp/config'
+export const CONFIG_ROUTE = '/plugins/dsh-plugins-hub/config'
 
 /**
  * Parse a `.env`-style file (KEY=value, ignoring blanks, # comments and

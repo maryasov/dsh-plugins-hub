@@ -3,7 +3,7 @@
  *
  * Third-party plugins and tools must not depend on the marketplace UI's
  * internal response shapes, so this module owns the small JSON envelope
- * exposed under `/plugins/dsh-plugins-mp/api/v1`.
+ * exposed under `/plugins/dsh-plugins-hub/api/v1`.
  *
  * Ported from dsh-market (MIT) src/update-api-v1.ts; the envelope fields are
  * kept identical so a client written against theirs works against ours.
@@ -12,7 +12,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
-export const UPDATE_API_V1_SCHEMA = 'dsh-plugins-mp/update-api/v1' as const
+export const UPDATE_API_V1_SCHEMA = 'dsh-plugins-hub/update-api/v1' as const
 export const MAX_UPDATE_OPERATIONS_V1 = 50
 
 export type UpdateOperationState =

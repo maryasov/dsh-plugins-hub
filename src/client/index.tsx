@@ -1,8 +1,8 @@
 /**
- * dsh-plugins-mp, browser half: a marketplace catalog tab for DSH, styled in
+ * dsh-plugins-hub, browser half: a marketplace catalog tab for DSH, styled in
  * the dsh-market spirit — app-store card grid, detail view with the full
  * description, current-host compatibility badge and a one-click Install that
- * goes through the plugin's host half (POST /plugins/dsh-plugins-mp/install →
+ * goes through the plugin's host half (POST /plugins/dsh-plugins-hub/install →
  * `dsh plugin --profile <p> add <source>`).
  *
  * Soft integration with dsh-better-sidebar (omdsh-dev): its client half
@@ -51,13 +51,13 @@ declare module '@deepseek-ai/cordis' {
 // adopt it on mount and fall back to the hosting backend below.
 let API_BASE = 'https://dsh-plugins-mp.com/api'
 const API_BASE_DEFAULT = 'https://dsh-plugins-mp.com/api'
-const CONFIG_ROUTE = '/plugins/dsh-plugins-mp/config'
-const HOST_ROUTE = '/plugins/dsh-plugins-mp/host'
-const INSTALL_ROUTE = '/plugins/dsh-plugins-mp/install'
-const NOTE_ROUTE = '/plugins/dsh-plugins-mp/note'
-const SETTINGS_ROUTE = '/plugins/dsh-plugins-mp/settings'
-const TELEMETRY_PAYLOAD_ROUTE = '/plugins/dsh-plugins-mp/telemetry-payload'
-const LOGS_ROUTE = '/plugins/dsh-plugins-mp/logs'
+const CONFIG_ROUTE = '/plugins/dsh-plugins-hub/config'
+const HOST_ROUTE = '/plugins/dsh-plugins-hub/host'
+const INSTALL_ROUTE = '/plugins/dsh-plugins-hub/install'
+const NOTE_ROUTE = '/plugins/dsh-plugins-hub/note'
+const SETTINGS_ROUTE = '/plugins/dsh-plugins-hub/settings'
+const TELEMETRY_PAYLOAD_ROUTE = '/plugins/dsh-plugins-hub/telemetry-payload'
+const LOGS_ROUTE = '/plugins/dsh-plugins-hub/logs'
 
 // The client appends /plugins, /categories, … to the base, so it must carry the
 // /api segment the API server is reached under (dev.dsh-plugins-mp.com/api →
@@ -209,12 +209,12 @@ interface InstalledItem {
 }
 
 async function fetchInstalled(): Promise<InstalledItem[]> {
-  const res = await fetch('/plugins/dsh-plugins-mp/installed', { headers: { accept: 'application/json' } })
+  const res = await fetch('/plugins/dsh-plugins-hub/installed', { headers: { accept: 'application/json' } })
   if (!res.ok) throw new Error(String(res.status))
   const body = (await res.json()) as { items?: InstalledItem[] }
   const items = body.items ?? []
   try {
-    const tRes = await fetch('/plugins/dsh-plugins-mp/toggle', { headers: { accept: 'application/json' } })
+    const tRes = await fetch('/plugins/dsh-plugins-hub/toggle', { headers: { accept: 'application/json' } })
     if (tRes.ok) {
       const state = (await tRes.json()) as { items?: Array<{ name: string; disabled: boolean; live: boolean }> }
       const byName = new Map((state.items ?? []).map((row) => [row.name, row]))
@@ -232,7 +232,7 @@ async function fetchInstalled(): Promise<InstalledItem[]> {
 
 async function fetchUpdates(): Promise<Record<string, { latest: string | null; updateAvailable: boolean }>> {
   try {
-    const res = await fetch('/plugins/dsh-plugins-mp/update', { headers: { accept: 'application/json' } })
+    const res = await fetch('/plugins/dsh-plugins-hub/update', { headers: { accept: 'application/json' } })
     if (!res.ok) return {}
     const body = (await res.json()) as { items?: Array<{ name: string; latest: string | null; updateAvailable: boolean }> }
     return Object.fromEntries((body.items ?? []).map((item) => [item.name, { latest: item.latest, updateAvailable: item.updateAvailable }]))
@@ -1212,7 +1212,7 @@ function InstallButton(props: {
   const allowAndRetry = () => {
     if (blocked.length === 0) return
     setState({ phase: 'busy' })
-    pluginAction('/plugins/dsh-plugins-mp/approve-builds', { packages: blocked, profile })
+    pluginAction('/plugins/dsh-plugins-hub/approve-builds', { packages: blocked, profile })
       .then(() => requestInstall(props.slug, profile))
       .then((r) => {
         if (r.ok) {
@@ -2066,7 +2066,7 @@ Object.assign(S, {
 })
 
 /** Settings tab: the agent-tools switch, pnpm health, log export, planned rows. */
-const BACKUP_ROUTE = '/plugins/dsh-plugins-mp/backup'
+const BACKUP_ROUTE = '/plugins/dsh-plugins-hub/backup'
 
 interface BackupSummary {
   createdAt: string
@@ -2179,7 +2179,7 @@ function BackupSection(props: { onNeedsRestart?: () => void }) {
   )
 }
 
-const SYNC_ROUTE = '/plugins/dsh-plugins-mp/sync'
+const SYNC_ROUTE = '/plugins/dsh-plugins-hub/sync'
 
 interface SyncResult {
   ok?: boolean
@@ -2405,7 +2405,7 @@ function SettingsView(props: { children?: ReactNode; onNeedsRestart?: () => void
           <div style={S.settingsName}>{t.eventLog}</div>
           <div style={S.hint}>{t.eventLogHint}</div>
         </div>
-        <a style={S.link} href={LOGS_ROUTE} download="dsh-plugins-mp.log">{t.download}</a>
+        <a style={S.link} href={LOGS_ROUTE} download="dsh-plugins-hub.log">{t.download}</a>
       </div>
       {props.children}
       <BackupSection onNeedsRestart={props.onNeedsRestart} />
@@ -2471,7 +2471,7 @@ interface MpGroupView {
   members: string[]
 }
 
-const GROUP_ROUTE = '/plugins/dsh-plugins-mp/group'
+const GROUP_ROUTE = '/plugins/dsh-plugins-hub/group'
 
 function GroupRow(props: {
   group: MpGroupView
@@ -2632,7 +2632,7 @@ function GroupsBlock(props: { items: InstalledItem[]; onChanged: () => void; onN
   )
 }
 
-const ORDER_ROUTE = '/plugins/dsh-plugins-mp/order'
+const ORDER_ROUTE = '/plugins/dsh-plugins-hub/order'
 
 interface OrderStack {
   bundles: string[]
@@ -2784,7 +2784,7 @@ function InstalledRow(props: {
             style={{ ...S.installBtn, ...(item.disabled === true ? {} : BADGE_TONE.passed) }}
             disabled={busy}
             title={item.disabled === true ? t.toggleOn : t.toggleOff}
-            onClick={() => act('/plugins/dsh-plugins-mp/toggle', { name: item.name, disable: item.disabled !== true })}
+            onClick={() => act('/plugins/dsh-plugins-hub/toggle', { name: item.name, disable: item.disabled !== true })}
           >
             {busy ? '…' : item.disabled === true ? t.offBadge : t.liveBadge}
           </button>
@@ -2793,7 +2793,7 @@ function InstalledRow(props: {
               type="button"
               style={S.installBtn}
               disabled={busy}
-              onClick={() => act('/plugins/dsh-plugins-mp/update', { name: item.name })}
+              onClick={() => act('/plugins/dsh-plugins-hub/update', { name: item.name })}
             >
               {t.update}
             </button>
@@ -2803,7 +2803,7 @@ function InstalledRow(props: {
               type="button"
               style={{ ...S.installBtn, ...BADGE_TONE.failed }}
               disabled={busy}
-              onClick={() => act('/plugins/dsh-plugins-mp/uninstall', { name: item.name })}
+              onClick={() => act('/plugins/dsh-plugins-hub/uninstall', { name: item.name })}
             >
               {busy ? '…' : t.confirmUninstall}
             </button>
@@ -2872,7 +2872,7 @@ function PnpmHealthRow() {
   const [health, setHealth] = useState<{ found: boolean; version: string | null } | null>(null)
   const [busy, setBusy] = useState(false)
   const reload = (): void => {
-    fetch('/plugins/dsh-plugins-mp/health', { headers: { accept: 'application/json' } })
+    fetch('/plugins/dsh-plugins-hub/health', { headers: { accept: 'application/json' } })
       .then((res) => res.json())
       .then((body: { pnpm?: { found: boolean; version: string | null } }) =>
         setHealth(body.pnpm ?? { found: false, version: null }))
@@ -2881,7 +2881,7 @@ function PnpmHealthRow() {
   useEffect(reload, [])
   const setup = (): void => {
     setBusy(true)
-    pluginAction('/plugins/dsh-plugins-mp/setup-pnpm', {})
+    pluginAction('/plugins/dsh-plugins-hub/setup-pnpm', {})
       .finally(() => { setBusy(false); reload() })
   }
   return (
@@ -2918,7 +2918,7 @@ function DiagnosticsView() {
   const [report, setReport] = useState<DiagnosticsReport | null>(null)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    fetch('/plugins/dsh-plugins-mp/diagnostics', { headers: { accept: 'application/json' } })
+    fetch('/plugins/dsh-plugins-hub/diagnostics', { headers: { accept: 'application/json' } })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
       .then((body: DiagnosticsReport) => setReport(body))
       .catch((e) => setError(String(e)))
@@ -2985,13 +2985,13 @@ function useRestartFlow(): { pending: boolean; restarting: boolean; arm: () => v
     void (async () => {
       setRestarting(true)
       try {
-        const before = await fetch('/plugins/dsh-plugins-mp/status', { headers: { accept: 'application/json' } })
+        const before = await fetch('/plugins/dsh-plugins-hub/status', { headers: { accept: 'application/json' } })
           .then((res) => res.json()) as { pid?: number }
-        await fetch('/plugins/dsh-plugins-mp/restart', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
+        await fetch('/plugins/dsh-plugins-hub/restart', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
         for (let i = 0; i < 120; i++) {
           await new Promise((resolve) => setTimeout(resolve, 1000))
           try {
-            const after = await fetch('/plugins/dsh-plugins-mp/status', { headers: { accept: 'application/json' } })
+            const after = await fetch('/plugins/dsh-plugins-hub/status', { headers: { accept: 'application/json' } })
               .then((res) => res.json()) as { pid?: number }
             if (after.pid !== undefined && before.pid !== undefined && after.pid !== before.pid) break
           } catch { /* host going down — keep polling */ }
@@ -3033,7 +3033,7 @@ function ThemesView(props: { onNeedsRestart?: () => void } = {}) {
       .then((d) => setItems(d.items))
       .catch(() => setItems([]))
     fetchInstalled().then(setInstalled).catch(() => setInstalled([]))
-    fetch('/plugins/dsh-plugins-mp/theme', { headers: { accept: 'application/json' } })
+    fetch('/plugins/dsh-plugins-hub/theme', { headers: { accept: 'application/json' } })
       .then((r) => (r.ok ? r.json() : null))
       .then((d: { active?: { slug: string; name: string } | null } | null) => setActive(d?.active ?? null))
       .catch(() => {})
@@ -3065,7 +3065,7 @@ function ThemesView(props: { onNeedsRestart?: () => void } = {}) {
       if (active !== null && active.slug !== c.slug) {
         const prev = installed.find((i) => i.name === active.name)
         if (prev !== undefined && prev.disabled !== true) {
-          await post('/plugins/dsh-plugins-mp/toggle', { name: active.name, disable: true })
+          await post('/plugins/dsh-plugins-hub/toggle', { name: active.name, disable: true })
         }
       }
       let name = c.npmPackage ?? ''
@@ -3079,11 +3079,11 @@ function ThemesView(props: { onNeedsRestart?: () => void } = {}) {
       } else {
         name = inst.name
         if (inst.disabled === true) {
-          await post('/plugins/dsh-plugins-mp/toggle', { name, disable: false })
+          await post('/plugins/dsh-plugins-hub/toggle', { name, disable: false })
         }
       }
       if (name === '') throw new Error('cannot resolve the theme package name')
-      await post('/plugins/dsh-plugins-mp/theme', { slug: c.slug, name })
+      await post('/plugins/dsh-plugins-hub/theme', { slug: c.slug, name })
       setActive({ slug: c.slug, name })
       setInstalled(await fetchInstalled())
       if (!hot) props.onNeedsRestart?.()
@@ -3100,9 +3100,9 @@ function ThemesView(props: { onNeedsRestart?: () => void } = {}) {
     try {
       const inst = installed.find((i) => i.name === active.name)
       if (inst !== undefined && inst.disabled !== true) {
-        await post('/plugins/dsh-plugins-mp/toggle', { name: active.name, disable: true })
+        await post('/plugins/dsh-plugins-hub/toggle', { name: active.name, disable: true })
       }
-      await post('/plugins/dsh-plugins-mp/theme', { slug: null })
+      await post('/plugins/dsh-plugins-hub/theme', { slug: null })
       setActive(null)
       setInstalled(await fetchInstalled())
     } catch (e) {
@@ -3401,7 +3401,7 @@ export function apply(ctx: import('@deepseek-ai/cordis').Context): void {
       const sidebar = (sidebarCtx as unknown as { betterSidebar: BetterSidebarLike }).betterSidebar
       ctx.effect(() =>
         sidebar.registerTab({
-          id: 'dsh-plugins-mp:catalog',
+          id: 'dsh-plugins-hub:catalog',
           title: () => uiLang().title,
           description: () => 'dsh-plugins-mp.com',
           // better-sidebar renders this in the tab strip (14) and in the +
@@ -3412,7 +3412,7 @@ export function apply(ctx: import('@deepseek-ai/cordis').Context): void {
           single: true,
           component: (tabProps) => <MarketShell {...tabProps} />,
         }),
-      'dsh-plugins-mp: catalog tab')
+      'dsh-plugins-hub: catalog tab')
     },
   })
 
@@ -3430,20 +3430,20 @@ export function apply(ctx: import('@deepseek-ai/cordis').Context): void {
     // re-register loop is not worth it for one word).
     const off = slots.inject('settings.section', () =>
       slots.register(
-        { name: 'settings.section', id: 'dsh-plugins-mp', order: 46, label: () => uiLang().title },
+        { name: 'settings.section', id: 'dsh-plugins-hub', order: 46, label: () => uiLang().title },
         () => <MarketShell visible scope={{ sessionId: 'settings' }} surface="settings" />,
       ),
     )
     if (typeof off === 'function') {
-      ctx.effect(() => off as () => void, 'dsh-plugins-mp: settings section')
+      ctx.effect(() => off as () => void, 'dsh-plugins-hub: settings section')
     }
     // DSH paints a generic gear on external sections (no icon field in the
     // contract): mark our localized nav row and paint the marketplace glyph
     // over it with a currentColor mask — same adaptation as better-sidebar.
-    ctx.effect(() => installSettingsNavStyle(), 'dsh-plugins-mp: settings nav style')
+    ctx.effect(() => installSettingsNavStyle(), 'dsh-plugins-hub: settings nav style')
     ctx.effect(
       () => registerSettingsNavIcon(() => uiLang().title),
-      'dsh-plugins-mp: settings nav icon',
+      'dsh-plugins-hub: settings nav icon',
     )
   })
 }

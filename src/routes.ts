@@ -2,19 +2,19 @@
  * Host HTTP surface (web profiles only, mounted through the dynamic
  * ctx.inject(['webServer']) pattern — headless profiles skip it):
  *
- * - GET  /plugins/dsh-plugins-mp/host    → { dsh: { version } | null }
- * - GET  /plugins/dsh-plugins-mp/config  → { apiBase } — resolved backend the
+ * - GET  /plugins/dsh-plugins-hub/host    → { dsh: { version } | null }
+ * - GET  /plugins/dsh-plugins-hub/config  → { apiBase } — resolved backend the
  *   browser half should use (host resolves config/env/.env once, browser is
  *   same-origin to it).
- * - POST /plugins/dsh-plugins-mp/install → body { slug, profile, dry? };
+ * - POST /plugins/dsh-plugins-hub/install → body { slug, profile, dry? };
  *   resolves the install source from the marketplace API and re-invokes the
  *   `dsh plugin` CLI (child_process, NOT ctx.shell: the agent shell is a
  *   sandboxed executor that denies profile writes — same reasoning as
  *   dsh-market). One install at a time.
- * - GET  /plugins/dsh-plugins-mp/settings → { agentTools }
- * - POST /plugins/dsh-plugins-mp/settings → body { agentTools }: flips the
+ * - GET  /plugins/dsh-plugins-hub/settings → { agentTools }
+ * - POST /plugins/dsh-plugins-hub/settings → body { agentTools }: flips the
  *   model-facing tools live through the runtime.
- * - GET  /plugins/dsh-plugins-mp/logs → sanitized plain-text event log.
+ * - GET  /plugins/dsh-plugins-hub/logs → sanitized plain-text event log.
  */
 import { existsSync, readFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
@@ -75,35 +75,35 @@ import {
   apiBootId,
 } from './update-api.js'
 
-export const HOST_ROUTE = '/plugins/dsh-plugins-mp/host'
-export const INSTALL_ROUTE = '/plugins/dsh-plugins-mp/install'
-export const SETTINGS_ROUTE = '/plugins/dsh-plugins-mp/settings'
-export const TELEMETRY_ROUTE = '/plugins/dsh-plugins-mp/telemetry-payload'
-export const FAVORITE_ROUTE = '/plugins/dsh-plugins-mp/favorite'
-export const NOTE_ROUTE = '/plugins/dsh-plugins-mp/note'
-export const THEME_ROUTE = '/plugins/dsh-plugins-mp/theme'
-export const LOGS_ROUTE = '/plugins/dsh-plugins-mp/logs'
-export const INSTALLED_ROUTE = '/plugins/dsh-plugins-mp/installed'
-export const UNINSTALL_ROUTE = '/plugins/dsh-plugins-mp/uninstall'
-export const UPDATE_ROUTE = '/plugins/dsh-plugins-mp/update'
-export const APPROVE_BUILDS_ROUTE = '/plugins/dsh-plugins-mp/approve-builds'
-export const HEALTH_ROUTE = '/plugins/dsh-plugins-mp/health'
-export const SETUP_PNPM_ROUTE = '/plugins/dsh-plugins-mp/setup-pnpm'
-export const TOGGLE_ROUTE = '/plugins/dsh-plugins-mp/toggle'
-export const GROUP_ROUTE = '/plugins/dsh-plugins-mp/group'
-export const ORDER_ROUTE = '/plugins/dsh-plugins-mp/order'
-export const BACKUP_ROUTE = '/plugins/dsh-plugins-mp/backup'
-export const SYNC_ROUTE = '/plugins/dsh-plugins-mp/sync'
-export const API_V1_CAPABILITIES_ROUTE = '/plugins/dsh-plugins-mp/api/v1/capabilities'
-export const API_V1_UPDATES_ROUTE = '/plugins/dsh-plugins-mp/api/v1/updates'
-export const API_V1_OPERATIONS_ROUTE = '/plugins/dsh-plugins-mp/api/v1/operations'
-export const API_V1_ROLLBACK_ROUTE = '/plugins/dsh-plugins-mp/api/v1/rollback'
-export const API_V1_RESTART_ROUTE = '/plugins/dsh-plugins-mp/api/v1/restart'
-export const SNAPSHOTS_ROUTE = '/plugins/dsh-plugins-mp/snapshots'
-export const RESTORE_SNAPSHOT_ROUTE = '/plugins/dsh-plugins-mp/restore-snapshot'
-export const STATUS_ROUTE = '/plugins/dsh-plugins-mp/status'
-export const RESTART_ROUTE = '/plugins/dsh-plugins-mp/restart'
-export const DIAGNOSTICS_ROUTE = '/plugins/dsh-plugins-mp/diagnostics'
+export const HOST_ROUTE = '/plugins/dsh-plugins-hub/host'
+export const INSTALL_ROUTE = '/plugins/dsh-plugins-hub/install'
+export const SETTINGS_ROUTE = '/plugins/dsh-plugins-hub/settings'
+export const TELEMETRY_ROUTE = '/plugins/dsh-plugins-hub/telemetry-payload'
+export const FAVORITE_ROUTE = '/plugins/dsh-plugins-hub/favorite'
+export const NOTE_ROUTE = '/plugins/dsh-plugins-hub/note'
+export const THEME_ROUTE = '/plugins/dsh-plugins-hub/theme'
+export const LOGS_ROUTE = '/plugins/dsh-plugins-hub/logs'
+export const INSTALLED_ROUTE = '/plugins/dsh-plugins-hub/installed'
+export const UNINSTALL_ROUTE = '/plugins/dsh-plugins-hub/uninstall'
+export const UPDATE_ROUTE = '/plugins/dsh-plugins-hub/update'
+export const APPROVE_BUILDS_ROUTE = '/plugins/dsh-plugins-hub/approve-builds'
+export const HEALTH_ROUTE = '/plugins/dsh-plugins-hub/health'
+export const SETUP_PNPM_ROUTE = '/plugins/dsh-plugins-hub/setup-pnpm'
+export const TOGGLE_ROUTE = '/plugins/dsh-plugins-hub/toggle'
+export const GROUP_ROUTE = '/plugins/dsh-plugins-hub/group'
+export const ORDER_ROUTE = '/plugins/dsh-plugins-hub/order'
+export const BACKUP_ROUTE = '/plugins/dsh-plugins-hub/backup'
+export const SYNC_ROUTE = '/plugins/dsh-plugins-hub/sync'
+export const API_V1_CAPABILITIES_ROUTE = '/plugins/dsh-plugins-hub/api/v1/capabilities'
+export const API_V1_UPDATES_ROUTE = '/plugins/dsh-plugins-hub/api/v1/updates'
+export const API_V1_OPERATIONS_ROUTE = '/plugins/dsh-plugins-hub/api/v1/operations'
+export const API_V1_ROLLBACK_ROUTE = '/plugins/dsh-plugins-hub/api/v1/rollback'
+export const API_V1_RESTART_ROUTE = '/plugins/dsh-plugins-hub/api/v1/restart'
+export const SNAPSHOTS_ROUTE = '/plugins/dsh-plugins-hub/snapshots'
+export const RESTORE_SNAPSHOT_ROUTE = '/plugins/dsh-plugins-hub/restore-snapshot'
+export const STATUS_ROUTE = '/plugins/dsh-plugins-hub/status'
+export const RESTART_ROUTE = '/plugins/dsh-plugins-hub/restart'
+export const DIAGNOSTICS_ROUTE = '/plugins/dsh-plugins-hub/diagnostics'
 
 const INSTALL_TIMEOUT_MS = 10 * 60_000
 const MAX_OUTPUT_CHARS = 20_000
@@ -1995,6 +1995,6 @@ export function mountRoutes(ctx: {
         stopRestart()
         stopDiagnostics()
       }
-    }, 'dsh-plugins-mp: host routes')
+    }, 'dsh-plugins-hub: host routes')
   })
 }

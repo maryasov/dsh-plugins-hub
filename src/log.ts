@@ -1,6 +1,6 @@
 /**
  * Event log for issue reports: what the plugin did and how it failed,
- * exportable as plain text from `GET /plugins/dsh-plugins-mp/logs`.
+ * exportable as plain text from `GET /plugins/dsh-plugins-hub/logs`.
  *
  * Privacy: entries are sanitized on write — the home directory collapses to
  * `~`, and value-shaped secrets (tokens, keys) are redacted before a string
@@ -44,7 +44,7 @@ export function logEvent(level: LogLevel, scope: string, message: string): void 
 /** The whole buffer as one human-readable plain-text blob (log-file shaped). */
 export function exportLog(): string {
   const head = [
-    'dsh-plugins-mp event log',
+    'dsh-plugins-hub event log',
     `exported: ${new Date().toISOString()}`,
     `entries: ${ring.length}`,
     ''.padEnd(60, '-'),

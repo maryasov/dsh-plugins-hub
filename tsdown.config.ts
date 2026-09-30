@@ -1,12 +1,12 @@
 /**
- * Standalone tsdown config for the dsh-plugins-mp external plugin (adapted
+ * Standalone tsdown config for the dsh-plugins-hub external plugin (adapted
  * from the dsh-sentinel build, the community-standard external client build):
  * node half as plain ESM for the host Loader, browser half as one CJS closure
  * bundle whose externals are exactly the platform seed modules.
  */
 import { defineConfig } from 'tsdown'
 
-const PLUGIN_ID = 'dsh-plugins-mp'
+const PLUGIN_ID = 'dsh-plugins-hub'
 
 const PLATFORM_MODULES = [
   'react',

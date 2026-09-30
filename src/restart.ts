@@ -91,7 +91,7 @@ export function triggerRestart(profileDir: string): RestartOutcome {
   // re-execs the exact invocation (same argv, cwd, env).
   const script = [
     '#!/bin/sh',
-    '# dsh-plugins-mp restart successor: waits for the old process, then',
+    '# dsh-plugins-hub restart successor: waits for the old process, then',
     '# re-execs the exact DSH invocation. Armed by the market UI.',
     `OLD_PID=${String(process.pid)}`,
     `while [ -d /proc/$OLD_PID ]; do sleep 0.3; done`,

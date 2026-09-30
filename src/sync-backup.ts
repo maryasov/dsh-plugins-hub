@@ -328,7 +328,7 @@ async function gistApi(
           accept: 'application/vnd.github+json',
           authorization: `Bearer ${token}`,
           'content-type': 'application/json',
-          'user-agent': 'dsh-plugins-mp',
+          'user-agent': 'dsh-plugins-hub',
           ...(body !== undefined ? { 'content-length': String(Buffer.byteLength(body)) } : {}),
         },
         socket,
@@ -376,7 +376,7 @@ export async function createGist(token: string, backup: ProfileBackup): Promise<
   const content = JSON.stringify(backup, null, 2)
   if (Buffer.byteLength(content) > GIST_MAX_BYTES) throw new Error('backup exceeds the GitHub Gist 1 MB limit')
   const res = await gistApi(token, 'POST', '/gists', {
-    description: `dsh-plugins-mp profile backup ${new Date().toISOString().slice(0, 10)}`,
+    description: `dsh-plugins-hub profile backup ${new Date().toISOString().slice(0, 10)}`,
     public: false,
     files: { [GIST_FILENAME]: { content } },
   })

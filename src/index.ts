@@ -1,5 +1,5 @@
 /**
- * dsh-plugins-mp, node half: model-facing tools over the marketplace API
+ * dsh-plugins-hub, node half: model-facing tools over the marketplace API
  * (dsh-plugins-mp.com). Registered through ctx.tools.register(defineTool)
  * per the DSH tool-authoring contract; the plugin stays a thin API adapter —
  * no execution, no persistence beyond its `.dsh-mp/state.json` settings.
@@ -25,7 +25,7 @@ import type { MpRuntime } from './runtime.js'
 import { loadMpState, saveMpState, type MpState } from './store.js'
 export { mountRoutes }
 
-export const name = 'dsh-plugins-mp'
+export const name = 'dsh-plugins-hub'
 export const inject = ['tools']
 
 /** Loader config (cordis.patch.yml `config:` block) + .env overrides. */
