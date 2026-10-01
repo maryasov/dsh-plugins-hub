@@ -946,6 +946,9 @@ const S: Record<string, React.CSSProperties> = {
     color: 'inherit',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
+    // Клик по чипу оставляет фокус — UA рисует белую обводку на посещённом
+    // разделе; гасим её (выбор и так подсвечен chipOn).
+    outline: 'none',
   },
   chipOn: {
     background: 'rgba(79,124,201,0.16)',
