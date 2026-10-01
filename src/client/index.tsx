@@ -292,6 +292,8 @@ const UI = {
     secPlugins: 'Plugins',
     secSkills: 'Skills',
     secApps: 'Apps',
+    secPresets: 'Presets',
+    secMcp: 'MCP',
     sortStars: '★ Stars',
     sortUpdated: 'Updated',
     sortNewest: 'Newest',
@@ -421,6 +423,8 @@ const UI = {
     secPlugins: '插件',
     secSkills: '技能',
     secApps: '应用',
+    secPresets: '预设',
+    secMcp: 'MCP',
     sortStars: '★ 星数',
     sortUpdated: '更新时间',
     sortNewest: '最新',
@@ -550,6 +554,8 @@ const UI = {
     secPlugins: 'Плагины',
     secSkills: 'Скиллы',
     secApps: 'Приложения',
+    secPresets: 'Пресеты',
+    secMcp: 'MCP',
     sortStars: '★ Звёзды',
     sortUpdated: 'Обновлённые',
     sortNewest: 'Новые',
@@ -1366,7 +1372,17 @@ function CatalogView(props: MpTabProps) {
   const [cats, setCats] = useState<Array<{ slug: string; count: number }>>([])
   const [cat, setCat] = useState('')
   // Верхний уровень каталога: у Плагинов/Скиллов/Приложений свои категории.
-  const [sec, setSec] = useState<'plugin' | 'skill' | 'app'>('plugin')
+  // Разделы каталога; у skill — два чипа: dsh-обёртки (dsh=1) и классика (dsh=0).
+  const [sec, setSec] = useState<'plugin' | 'skill' | 'app' | 'preset' | 'mcp'>('plugin')
+  const [secDsh, setSecDsh] = useState<'1' | '0' | undefined>(undefined)
+  const SEC_CHIPS: { sKey: 'plugin' | 'skill' | 'app' | 'preset' | 'mcp'; dsh?: '1' | '0'; label: string; badge?: boolean }[] = [
+    { sKey: 'plugin', label: t.secPlugins, badge: true },
+    { sKey: 'skill', dsh: '1', label: t.secSkills, badge: true },
+    { sKey: 'preset', label: t.secPresets, badge: true },
+    { sKey: 'skill', dsh: '0', label: t.secSkills },
+    { sKey: 'app', label: t.secApps },
+    { sKey: 'mcp', label: t.secMcp },
+  ]
   const [sort, setSort] = useState<'stars' | 'updated' | 'newest' | 'name'>('stars')
 
   useEffect(() => {
@@ -1418,6 +1434,7 @@ function CatalogView(props: MpTabProps) {
         const usp = new URLSearchParams({ limit: '25', page: String(p), installable: '1' })
         if (q !== '') usp.set('q', q)
         usp.set('section', sec)
+        if (secDsh !== undefined) usp.set('dsh', secDsh)
         if (cat !== '') usp.set('category', cat)
         usp.set('sort', sort)
         usp.set('locale', langCode())
@@ -1449,6 +1466,7 @@ function CatalogView(props: MpTabProps) {
     const usp = new URLSearchParams({ limit: '25', page: String(nextPage), installable: '1' })
     if (q !== '') usp.set('q', q)
     usp.set('section', sec)
+    if (secDsh !== undefined) usp.set('dsh', secDsh)
     if (cat !== '') usp.set('category', cat)
     usp.set('sort', sort)
     usp.set('locale', langCode())
@@ -1477,7 +1495,7 @@ function CatalogView(props: MpTabProps) {
     if (slug !== null) return
     return load(query, 1, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, cat, sort, sec])
+  }, [slug, cat, sort, sec, secDsh])
 
   // Переключение языка интерфейса DSH (html lang): тихо переводим уже
   // загруженные карточки под новый язык. Дозапрос тех же страниц мерджится
@@ -1504,17 +1522,32 @@ function CatalogView(props: MpTabProps) {
               <BrandMark size={18} />
               {t.title}
               <div style={{ ...S.chipRow, marginLeft: 'auto' }}>
-                {(['plugin', 'skill', 'app'] as const).map((sKey) => (
+                {SEC_CHIPS.map((chip, i) => (
                   <button
-                    key={sKey}
-                    style={{ ...S.secChip, ...(sec === sKey ? S.chipOn : {}) }}
+                    key={`${chip.sKey}-${i}`}
+                    style={{ ...S.secChip, ...(sec === chip.sKey && secDsh === chip.dsh ? S.chipOn : {}) }}
                     onClick={() => {
-                      if (sKey === sec) return
-                      setSec(sKey)
+                      if (chip.sKey === sec && chip.dsh === secDsh) return
+                      setSec(chip.sKey)
+                      setSecDsh(chip.dsh)
                       setCat('')
                     }}
                   >
-                    {sKey === 'plugin' ? t.secPlugins : sKey === 'skill' ? t.secSkills : t.secApps}
+                    {chip.label}
+                    {chip.badge && (
+                      <span
+                        style={{
+                          marginLeft: 4,
+                          fontSize: 9,
+                          padding: '0 3px',
+                          borderRadius: 3,
+                          border: '1px solid currentColor',
+                          opacity: 0.75,
+                        }}
+                      >
+                        dsh
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
