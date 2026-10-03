@@ -936,18 +936,21 @@ const S: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     whiteSpace: 'nowrap',
   },
+  // Только лонгхэнды: chipOn переопределяет borderColor — смешение border-
+  // шортхэнда с лонгхэндом ломает React-дифф стилей (шортхэнд вычищается
+  // пустыми лонгхэндами, остаётся UA-рамка — «белая обводка посещённых»).
   secChip: {
     flexShrink: 0,
     padding: '2px 8px',
     fontSize: 11,
     borderRadius: 999,
-    border: '1px solid var(--dsw-alias-border, rgba(128,128,128,0.35))',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'var(--dsw-alias-border, rgba(128,128,128,0.35))',
     background: 'var(--dsw-alias-bg-base, transparent)',
     color: 'inherit',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
-    // Клик по чипу оставляет фокус — UA рисует белую обводку на посещённом
-    // разделе; гасим её (выбор и так подсвечен chipOn).
     outline: 'none',
   },
   chipOn: {
