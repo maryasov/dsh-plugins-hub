@@ -1529,7 +1529,10 @@ function CatalogView(props: MpTabProps) {
                   <button
                     key={`${chip.sKey}-${i}`}
                     style={{ ...S.secChip, ...(sec === chip.sKey && secDsh === chip.dsh ? S.chipOn : {}) }}
-                    onClick={() => {
+                    onClick={(e) => {
+                      // focus-ring DSH рисуется box-shadow'ом (outline:none не
+                      // берёт) — после клика фокус просто снимаем.
+                      e.currentTarget.blur()
                       if (chip.sKey === sec && chip.dsh === secDsh) return
                       setSec(chip.sKey)
                       setSecDsh(chip.dsh)
