@@ -2,3 +2,5 @@ node_modules/
 *.tsbuildinfo
 # Local backend override for rapid marketplace testing — machine-specific, never commit.
 .env
+# Working docs for agent handoff (internal, Russian) — not part of the published package.
+docs/
