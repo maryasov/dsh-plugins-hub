@@ -537,7 +537,7 @@ export function mountRoutes(ctx: {
   const resolveCommand = async (
     slug: string,
     profile: string,
-  ): Promise<{ command: string; source: string; fallback: string | null } | null> => {
+  ): Promise<{ command: string; source: string; fallback: string | null } | { error: string }> => {
     try {
       const detail = await fetchDetail(apiBase, slug, AbortSignal.timeout(15_000))
       const source = installSourceFor(detail.plugin)
@@ -552,8 +552,13 @@ export function mountRoutes(ctx: {
         source,
         fallback: fallback !== null && fallback !== source ? fallback : null,
       }
-    } catch {
-      return null
+    } catch (e) {
+      // «Не найден» без причины недиагностируем: транзиентный сбой API (роллаут
+      // пода, DNS, таймаут) выглядит как отсутствующий плагин. Реальную причину
+      // — и в event log, и в ответе (тултип кнопки установки).
+      const reason = e instanceof Error ? e.message : String(e)
+      logEvent('error', 'install', `resolve ${slug} failed: ${reason.slice(0, 200)}`)
+      return { error: reason.slice(0, 200) }
     }
   }
 
@@ -617,8 +622,8 @@ export function mountRoutes(ctx: {
             return
           }
           const resolved = await resolveCommand(slug, profile)
-          if (resolved === null) {
-            json(res, 404, { error: `plugin "${slug}" not found in the marketplace` })
+          if ('error' in resolved) {
+            json(res, 404, { error: `plugin "${slug}" not found in the marketplace (${resolved.error})` })
             return
           }
           if (body.dry === true) {
@@ -666,8 +671,6 @@ export function mountRoutes(ctx: {
                 outcome.hot = hot.ok
                 if (!hot.ok) outcome.hotReason = hot.reason ?? undefined
               }
-            }
-            if (outcome.ok) {
               const installedItem = installedName !== null
                 ? readInstalled(resolveProfileDir({ profile })).find((item) => item.name === installedName)
                 : undefined
